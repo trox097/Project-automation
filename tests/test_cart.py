@@ -4,18 +4,17 @@ from automation.pages.cart_page import CartPage
 from automation.pages.home_page import HomePage
 from automation.pages.modals import LoginModal
 from automation.pages.product_page import ProductPage
-from tests.data.users import TEST_USER
 
 
 @pytest.mark.smoke
-def test_add_products_updates_cart(driver, base_url):
+def test_add_products_updates_cart(driver, base_url, valid_user):
     products_to_add = ["Samsung galaxy s6", "Nokia lumia 1520"]
 
     home_page = HomePage(driver)
     home_page.open_home(base_url)
 
     login_modal = home_page.open_login_modal()
-    login_modal.submit_credentials(TEST_USER["username"], TEST_USER["password"])
+    login_modal.submit_credentials(valid_user["username"], valid_user["password"])
     assert home_page.is_user_logged_in()
 
     product_page = ProductPage(driver)
@@ -35,14 +34,14 @@ def test_add_products_updates_cart(driver, base_url):
 
 
 @pytest.mark.regression
-def test_cart_displays_correct_details(driver, base_url):
+def test_cart_displays_correct_details(driver, base_url, valid_user):
     products_to_add = ["Samsung galaxy s6", "Nokia lumia 1520"]
 
     home_page = HomePage(driver)
     home_page.open_home(base_url)
 
     login_modal = home_page.open_login_modal()
-    login_modal.submit_credentials(TEST_USER["username"], TEST_USER["password"])
+    login_modal.submit_credentials(valid_user["username"], valid_user["password"])
     assert home_page.is_user_logged_in()
 
     product_page = ProductPage(driver)

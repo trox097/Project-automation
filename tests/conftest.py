@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+from typing import Dict
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -33,6 +37,22 @@ def pytest_addoption(parser: pytest.Parser) -> None:
 @pytest.fixture
 def base_url(pytestconfig: pytest.Config) -> str:
     return pytestconfig.getoption("--base-url")
+
+
+@pytest.fixture(scope="session")
+def data_dir() -> Path:
+    return Path(__file__).resolve().parent / "data"
+
+
+@pytest.fixture(scope="session")
+def users_data(data_dir: Path) -> Dict[str, Dict[str, str]]:
+    with data_dir.joinpath("users.json").open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+@pytest.fixture
+def valid_user(users_data: Dict[str, Dict[str, str]]) -> Dict[str, str]:
+    return users_data["valid_user"]
 
 
 @pytest.fixture

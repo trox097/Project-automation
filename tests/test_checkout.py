@@ -5,7 +5,6 @@ from automation.pages.home_page import HomePage
 from automation.pages.modals import LoginModal
 from automation.pages.product_page import ProductPage
 from tests.data.orders import DEFAULT_ORDER
-from tests.data.users import TEST_USER
 
 
 def _extract_order_id(confirmation_text: str) -> str:
@@ -15,12 +14,12 @@ def _extract_order_id(confirmation_text: str) -> str:
     return match.group(1)
 
 
-def test_checkout_happy_path(driver, base_url):
+def test_checkout_happy_path(driver, base_url, valid_user):
     home_page = HomePage(driver)
     home_page.open_home(base_url)
 
     login_modal = home_page.open_login_modal()
-    login_modal.submit_credentials(TEST_USER["username"], TEST_USER["password"])
+    login_modal.submit_credentials(valid_user["username"], valid_user["password"])
     assert home_page.is_user_logged_in()
 
     product_page = ProductPage(driver)

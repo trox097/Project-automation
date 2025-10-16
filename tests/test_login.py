@@ -1,17 +1,17 @@
 from automation.pages.home_page import HomePage
 from automation.pages.modals import LoginModal
-from tests.data.users import TEST_USER
 
 
-def test_successful_login(driver, base_url):
+def test_successful_login(driver, base_url, valid_user):
     home_page = HomePage(driver)
     home_page.open_home(base_url)
 
     login_modal = home_page.open_login_modal()
     assert isinstance(login_modal, LoginModal)
 
-    login_modal.submit_credentials(TEST_USER["username"], TEST_USER["password"])
+    login_modal.submit_credentials(valid_user["username"], valid_user["password"])
 
-    assert home_page.is_user_logged_in(), "User greeting not visible after login."
-    greeting = home_page.get_logged_in_username()
-    assert TEST_USER["username"] in greeting, f"Expected username in greeting, got {greeting!r}"
+    home_page.wait_for_authenticated_state(valid_user["username"])
+
+    assert home_page.is_on_home_page(base_url), "User was not redirected to the home page after login."
+    assert home_page.is_logout_visible(), "Logout option is not visible after login."
