@@ -45,14 +45,32 @@ def data_dir() -> Path:
 
 
 @pytest.fixture(scope="session")
-def users_data(data_dir: Path) -> Dict[str, Dict[str, str]]:
-    with data_dir.joinpath("users.json").open(encoding="utf-8") as handle:
-        return json.load(handle)
+def _load_json_data(data_dir: Path):
+    def loader(file_name: str) -> Dict:
+        with data_dir.joinpath(file_name).open(encoding="utf-8") as handle:
+            return json.load(handle)
+
+    return loader
+
+
+@pytest.fixture(scope="session")
+def users_data(_load_json_data) -> Dict[str, Dict[str, str]]:
+    return _load_json_data("users.json")
+
+
+@pytest.fixture(scope="session")
+def orders_data(_load_json_data) -> Dict[str, Dict[str, str]]:
+    return _load_json_data("orders.json")
 
 
 @pytest.fixture
 def valid_user(users_data: Dict[str, Dict[str, str]]) -> Dict[str, str]:
     return users_data["valid_user"]
+
+
+@pytest.fixture
+def default_order(orders_data: Dict[str, Dict[str, str]]) -> Dict[str, str]:
+    return orders_data["default_order"]
 
 
 @pytest.fixture

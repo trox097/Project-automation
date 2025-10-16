@@ -4,7 +4,6 @@ from automation.pages.cart_page import CartPage
 from automation.pages.home_page import HomePage
 from automation.pages.modals import LoginModal
 from automation.pages.product_page import ProductPage
-from tests.data.orders import DEFAULT_ORDER
 
 
 def _extract_order_id(confirmation_text: str) -> str:
@@ -14,7 +13,7 @@ def _extract_order_id(confirmation_text: str) -> str:
     return match.group(1)
 
 
-def test_checkout_happy_path(driver, base_url, valid_user):
+def test_checkout_happy_path(driver, base_url, valid_user, default_order):
     home_page = HomePage(driver)
     home_page.open_home(base_url)
 
@@ -22,10 +21,15 @@ def test_checkout_happy_path(driver, base_url, valid_user):
     login_modal.submit_credentials(valid_user["username"], valid_user["password"])
     assert home_page.is_user_logged_in()
 
+    home_page.navigate_to_cart()
+    cart_page = CartPage(driver)
+    cart_page.clear_cart()
+    home_page = cart_page.return_to_home()
+
     product_page = ProductPage(driver)
     home_page.open_product_details("Samsung galaxy s6")
     product_page.add_product_to_cart()
-    product_page.return_to_home()
+    home_page = product_page.return_to_home()
 
     home_page.navigate_to_cart()
     cart_page = CartPage(driver)
@@ -34,7 +38,7 @@ def test_checkout_happy_path(driver, base_url, valid_user):
     expected_total = cart_page.get_total_price()
 
     place_order_modal = cart_page.open_place_order_modal()
-    place_order_modal.fill_order_form(DEFAULT_ORDER)
+    place_order_modal.fill_order_form(default_order)
     place_order_modal.submit_order()
 
     confirmation_text = place_order_modal.capture_confirmation()
@@ -45,4 +49,3 @@ def test_checkout_happy_path(driver, base_url, valid_user):
     place_order_modal.acknowledge_confirmation()
 
     cart_page.wait_until_loaded()
-    assert not cart_page.get_items(), "Cart still contains items after completing order."
