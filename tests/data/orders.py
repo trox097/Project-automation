@@ -1,0 +1,8 @@
+DEFAULT_ORDER = {
+    "name": "Automation Tester",
+    "country": "Argentina",
+    "city": "Buenos Aires",
+    "card": "4111111111111111",
+    "month": "12",
+    "year": "2026",
+}
